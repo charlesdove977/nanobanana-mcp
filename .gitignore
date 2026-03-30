@@ -1,0 +1,4 @@
+node_modules/
+.nano-banana-config.json
+generated_imgs/
+.env

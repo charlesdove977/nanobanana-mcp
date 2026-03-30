@@ -1,0 +1,114 @@
+<p align="center">
+  <img src="logo.png" alt="Nano Banana MCP" width="400" />
+</p>
+
+<h1 align="center">Nano Banana MCP</h1>
+
+<p align="center">
+  <strong>MCP server for Google Gemini image generation with configurable model support.</strong>
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> &bull;
+  <a href="#setup">Setup</a> &bull;
+  <a href="#models">Models</a> &bull;
+  <a href="#tools">Tools</a>
+</p>
+
+---
+
+## What is this?
+
+A fork of [nano-banana-mcp](https://github.com/ConechoAI/Nano-Banana-MCP) with one critical upgrade: **configurable model selection** via environment variable.
+
+The original package hardcodes `gemini-2.5-flash-image-preview` (shut down January 2026). This fork defaults to `gemini-3.1-flash-image-preview` and lets you swap models without touching code.
+
+## Features
+
+- Generate images from text prompts
+- Edit existing images with natural language
+- Iterative editing (continue refining the last image)
+- Multi-image reference support (style transfer, combining elements)
+- **Configurable Gemini model via `GEMINI_MODEL` env var**
+
+## Setup
+
+### Claude Code / Cursor
+
+Add to your `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "nano-banana": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/path/to/nanobanana-mcp/dist/index.js"],
+      "env": {
+        "GEMINI_API_KEY": "your-api-key-here",
+        "GEMINI_MODEL": "gemini-3.1-flash-image-preview"
+      }
+    }
+  }
+}
+```
+
+### Install Dependencies
+
+```bash
+git clone https://github.com/charlesdove977/nanobanana-mcp.git
+cd nanobanana-mcp
+npm install
+```
+
+### Get a Gemini API Key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Create a new API key
+3. Add it to your MCP config as `GEMINI_API_KEY`
+
+## Models
+
+Set `GEMINI_MODEL` in your env to any of these (or omit it to use the default):
+
+| Model ID | Tier | Price | Best For |
+|---|---|---|---|
+| `gemini-3.1-flash-image-preview` | Flash (default) | ~$0.045/img | Speed + quality balance |
+| `gemini-3-pro-image-preview` | Pro | ~$0.134/img | Highest quality, best text rendering |
+| `gemini-2.5-flash-image` | Legacy Flash | ~$0.039/img | Budget, high-volume |
+
+All models support both generation and editing through the same API.
+
+## Tools
+
+| Tool | Description |
+|---|---|
+| `generate_image` | Create a new image from a text prompt |
+| `edit_image` | Modify an existing image file with a prompt |
+| `continue_editing` | Keep refining the last generated/edited image |
+| `get_last_image_info` | Check the path and size of the last image |
+| `configure_gemini_token` | Set API key at runtime |
+| `get_configuration_status` | Check if API key is configured |
+
+### Examples
+
+**Generate:**
+> "A futuristic city skyline at sunset with flying cars"
+
+**Edit:**
+> Edit `photo.png`: "Remove the background and replace with a gradient"
+
+**Continue editing:**
+> "Make the colors more vibrant and add lens flare"
+
+## Image Storage
+
+Generated images are saved to `./generated_imgs/` in your working directory (macOS/Linux) or `~/Documents/nano-banana-images/` (Windows).
+
+## Credits
+
+Forked from [ConechoAI/Nano-Banana-MCP](https://github.com/ConechoAI/Nano-Banana-MCP). Updated with configurable model support and latest Gemini models.
+
+## License
+
+MIT

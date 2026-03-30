@@ -1,0 +1,50 @@
+{
+  "name": "nanobanana-mcp",
+  "version": "2.0.0",
+  "description": "MCP server for Google Gemini image generation with configurable model support",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "nanobanana-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "logo.png"
+  ],
+  "scripts": {
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "nano-banana",
+    "gemini",
+    "image-generation",
+    "ai",
+    "google-ai",
+    "claude-code",
+    "cursor",
+    "image-editing",
+    "gemini-3"
+  ],
+  "author": "charlesdove977",
+  "license": "MIT",
+  "homepage": "https://github.com/charlesdove977/nanobanana-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlesdove977/nanobanana-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/charlesdove977/nanobanana-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.16.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.22.4"
+  }
+}
