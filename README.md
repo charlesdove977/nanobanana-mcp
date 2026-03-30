@@ -35,6 +35,7 @@ The original package hardcodes `gemini-2.5-flash-image-preview` (shut down Janua
 - Edit existing images with natural language
 - Iterative editing (continue refining the last image)
 - Multi-image reference support (style transfer, combining elements)
+- **Configurable aspect ratio** (1:1, 16:9, 9:16, 3:2, 2:3, 4:3, 3:4, 4:5, 5:4, 21:9, and more)
 - **Configurable Gemini model via `GEMINI_MODEL` env var**
 
 ## Setup
@@ -89,17 +90,26 @@ All models support both generation and editing through the same API.
 
 | Tool | Description |
 |---|---|
-| `generate_image` | Create a new image from a text prompt |
-| `edit_image` | Modify an existing image file with a prompt |
-| `continue_editing` | Keep refining the last generated/edited image |
+| `generate_image` | Create a new image from a text prompt (optional `aspectRatio`) |
+| `edit_image` | Modify an existing image file with a prompt (optional `aspectRatio`) |
+| `continue_editing` | Keep refining the last generated/edited image (optional `aspectRatio`) |
 | `get_last_image_info` | Check the path and size of the last image |
 | `configure_gemini_token` | Set API key at runtime |
 | `get_configuration_status` | Check if API key is configured |
 
+### Aspect Ratios
+
+All image tools accept an optional `aspectRatio` parameter. Supported values:
+
+`1:1` `2:3` `3:2` `3:4` `4:3` `4:5` `5:4` `9:16` `16:9` `21:9` `1:4` `1:8` `4:1` `8:1`
+
 ### Examples
 
-**Generate:**
+**Generate (default 1:1):**
 > "A futuristic city skyline at sunset with flying cars"
+
+**Generate (16:9 widescreen):**
+> prompt: "A futuristic city skyline at sunset with flying cars", aspectRatio: "16:9"
 
 **Edit:**
 > Edit `photo.png`: "Remove the background and replace with a gradient"

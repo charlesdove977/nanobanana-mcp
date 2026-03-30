@@ -60,6 +60,11 @@ class NanoBananaMCP {
                                     type: "string",
                                     description: "Text prompt describing the NEW image to create from scratch",
                                 },
+                                aspectRatio: {
+                                    type: "string",
+                                    description: "Aspect ratio for the generated image. Supported: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9. Defaults to 1:1 if not specified.",
+                                    enum: ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"],
+                                },
                             },
                             required: ["prompt"],
                         },
@@ -84,6 +89,11 @@ class NanoBananaMCP {
                                         type: "string"
                                     },
                                     description: "Optional array of file paths to additional reference images to use during editing (e.g., for style transfer, adding elements, etc.)",
+                                },
+                                aspectRatio: {
+                                    type: "string",
+                                    description: "Aspect ratio for the edited image. Supported: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9. Defaults to 1:1 if not specified.",
+                                    enum: ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"],
                                 },
                             },
                             required: ["imagePath", "prompt"],
@@ -114,6 +124,11 @@ class NanoBananaMCP {
                                         type: "string"
                                     },
                                     description: "Optional array of file paths to additional reference images to use during editing (e.g., for style transfer, adding elements from other images, etc.)",
+                                },
+                                aspectRatio: {
+                                    type: "string",
+                                    description: "Aspect ratio for the edited image. Supported: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9. Defaults to 1:1 if not specified.",
+                                    enum: ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"],
                                 },
                             },
                             required: ["prompt"],
@@ -186,12 +201,16 @@ class NanoBananaMCP {
         if (!this.ensureConfigured()) {
             throw new McpError(ErrorCode.InvalidRequest, "Gemini API token not configured. Use configure_gemini_token first.");
         }
-        const { prompt } = request.params.arguments;
+        const { prompt, aspectRatio } = request.params.arguments;
         try {
-            const response = await this.genAI.models.generateContent({
+            const generateConfig = {
                 model: GEMINI_MODEL,
                 contents: prompt,
-            });
+            };
+            if (aspectRatio) {
+                generateConfig.config = { imageConfig: { aspectRatio } };
+            }
+            const response = await this.genAI.models.generateContent(generateConfig);
             // Process response to extract image data
             const content = [];
             const savedFiles = [];
@@ -227,6 +246,9 @@ class NanoBananaMCP {
             }
             // Build response content
             let statusText = `🎨 Image generated with nano-banana (${GEMINI_MODEL})!\n\nPrompt: "${prompt}"`;
+            if (aspectRatio) {
+                statusText += `\nAspect Ratio: ${aspectRatio}`;
+            }
             if (textContent) {
                 statusText += `\n\nDescription: ${textContent}`;
             }
@@ -258,7 +280,7 @@ class NanoBananaMCP {
         if (!this.ensureConfigured()) {
             throw new McpError(ErrorCode.InvalidRequest, "Gemini API token not configured. Use configure_gemini_token first.");
         }
-        const { imagePath, prompt, referenceImages } = request.params.arguments;
+        const { imagePath, prompt, referenceImages, aspectRatio } = request.params.arguments;
         try {
             // Prepare the main image
             const imageBuffer = await fs.readFile(imagePath);
@@ -296,14 +318,18 @@ class NanoBananaMCP {
             // Add the text prompt
             imageParts.push({ text: prompt });
             // Use new API format with multiple images and text
-            const response = await this.genAI.models.generateContent({
+            const editConfig = {
                 model: GEMINI_MODEL,
                 contents: [
                     {
                         parts: imageParts
                     }
                 ],
-            });
+            };
+            if (aspectRatio) {
+                editConfig.config = { imageConfig: { aspectRatio } };
+            }
+            const response = await this.genAI.models.generateContent(editConfig);
             // Process response
             const content = [];
             const savedFiles = [];
@@ -413,7 +439,7 @@ class NanoBananaMCP {
         if (!this.lastImagePath) {
             throw new McpError(ErrorCode.InvalidRequest, "No previous image found. Please generate or edit an image first, then use continue_editing for subsequent edits.");
         }
-        const { prompt, referenceImages } = request.params.arguments;
+        const { prompt, referenceImages, aspectRatio } = request.params.arguments;
         // 检查最后的图片文件是否存在
         try {
             await fs.access(this.lastImagePath);
@@ -429,7 +455,8 @@ class NanoBananaMCP {
                 arguments: {
                     imagePath: this.lastImagePath,
                     prompt: prompt,
-                    referenceImages: referenceImages
+                    referenceImages: referenceImages,
+                    aspectRatio: aspectRatio
                 }
             }
         });
