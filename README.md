@@ -15,6 +15,12 @@
   <a href="#tools">Tools</a>
 </p>
 
+<p align="center">
+  <a href="https://ccstrategic.io/">Website</a> &bull;
+  <a href="https://www.youtube.com/@charlieautomates">YouTube</a> &bull;
+  <a href="https://start.ccstrategic.io/skool">Skool Community</a>
+</p>
+
 ---
 
 ## What is this?
