@@ -10,7 +10,7 @@ import { config as dotenvConfig } from "dotenv";
 import os from "os";
 // Load environment variables
 dotenvConfig();
-const DEFAULT_MODEL = "gemini-3.1-flash-image-preview";
+const DEFAULT_MODEL = "gemini-3-pro-image-preview";
 const GEMINI_MODEL = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 const ConfigSchema = z.object({
     geminiApiKey: z.string().min(1, "Gemini API key is required"),
@@ -64,9 +64,10 @@ class NanoBananaMCP {
                                     type: "string",
                                     description: "Aspect ratio for the generated image. Supported: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9. Defaults to 1:1 if not specified.",
                                     enum: ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"],
+                                    default: "1:1",
                                 },
                             },
-                            required: ["prompt"],
+                            required: ["prompt", "aspectRatio"],
                         },
                     },
                     {
@@ -201,15 +202,14 @@ class NanoBananaMCP {
         if (!this.ensureConfigured()) {
             throw new McpError(ErrorCode.InvalidRequest, "Gemini API token not configured. Use configure_gemini_token first.");
         }
-        const { prompt, aspectRatio } = request.params.arguments;
+        const { prompt, aspectRatio: rawAspectRatio } = request.params.arguments;
+        const aspectRatio = rawAspectRatio || "1:1";
         try {
             const generateConfig = {
                 model: GEMINI_MODEL,
                 contents: prompt,
+                config: { imageConfig: { aspectRatio } },
             };
-            if (aspectRatio) {
-                generateConfig.config = { imageConfig: { aspectRatio } };
-            }
             const response = await this.genAI.models.generateContent(generateConfig);
             // Process response to extract image data
             const content = [];
