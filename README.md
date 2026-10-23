@@ -21,6 +21,8 @@
   <a href="https://start.ccstrategic.io/skool">Skool Community</a>
 </p>
 
+Step-by-step guide and setup walkthrough: [Nano Banana guide on charlieautomates.com](https://charlieautomates.com/free-resources/#nano-banana)
+
 ---
 
 ## What is this?
